@@ -26,7 +26,7 @@ const about: Command = createCommand({
         if (targetChannel && targetChannel.isTextBased()) {
             await targetChannel.send({ embeds: [embed] });
             await interaction.reply({
-                content: `✅ Informations envoyées dans ${targetChannel}`,
+                content: `✅ Commande envoyées dans ${targetChannel}`,
                 ephemeral: false,
             });
             Logger.command(`Commande /about exécutée par ${interaction.user.tag} dans #${targetChannel}.`);

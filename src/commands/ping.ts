@@ -27,7 +27,7 @@ const PingCommand: Command = createCommand({
             await targetChannel.send({ embeds: [embed] });
             
             await interaction.reply({
-                content: `✅ Informations envoyées dans ${targetChannel}`,
+                content: `✅ Commande envoyées dans ${targetChannel}`,
                 ephemeral: false,
             });
 
