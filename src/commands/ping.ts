@@ -1,8 +1,8 @@
-import { ChatInputCommandInteraction, TextChannel } from "discord.js";
+import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
 import type { Command } from "../types/Command";
 import { Logger } from "../utils/Logger";
-import { createCommand } from '../utils/CommandFactory';
+import { createCommand } from "../utils/CommandFactory";
 import { createEmbed } from "../utils/EmbedFactory";
 
 const PingCommand: Command = createCommand({

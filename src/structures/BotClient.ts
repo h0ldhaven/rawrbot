@@ -1,5 +1,5 @@
 import { Client, Collection, GatewayIntentBits } from "discord.js";
-import type { Command } from '../types/Command';
+import type { Command } from "../types/Command";
 
 export class BotClient extends Client {
     public commands: Collection<string, Command>;

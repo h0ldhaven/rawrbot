@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import type { ChatInputCommandInteraction, SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
 
 export interface Command {

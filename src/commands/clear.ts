@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, TextChannel } from "discord.js";
+import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
 import type { Command } from "../types/Command";
 import { createCommand } from "../utils/CommandFactory";
