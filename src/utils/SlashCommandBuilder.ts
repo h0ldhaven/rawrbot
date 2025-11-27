@@ -1,12 +1,11 @@
-import { 
-  SlashCommandBuilder,
+import type {
   ApplicationCommandOptionBase,
   SlashCommandNumberOption,
   SlashCommandIntegerOption,
   SlashCommandStringOption,
-  PermissionFlagsBits,
 } from "discord.js";
 import type { Command } from "../types/Command";
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
 
 export type CommandOption = {
   type: 

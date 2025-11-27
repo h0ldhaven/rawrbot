@@ -1,6 +1,9 @@
 name: CI deploy in prod
 
 on:
+  push:
+    tags:
+      - v*.*.*
   release:
     types: [published]
 
