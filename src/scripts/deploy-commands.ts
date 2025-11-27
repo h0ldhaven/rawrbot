@@ -5,6 +5,8 @@ import path from "path";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import type { Command } from "../types/Command";
 
+import * as BundledCommands from "../commands";
+
 async function main() {
     // ⚙️ Récupère les infos du .env
     const token = process.env.DISCORD_TOKEN!;
@@ -18,17 +20,28 @@ async function main() {
     const commands: RESTPostAPIApplicationCommandsJSONBody[] = [];
 
     const commandsPath = path.join(process.cwd(), "src", "commands");
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
+    const folderExists = fs.existsSync(commandsPath);
 
-    for (const file of commandFiles) {
-        const filePath = path.join(commandsPath, file);
-        const importedModule = await import(filePath);
-        const command = importedModule.default as Command;
+    if (folderExists) {
+        const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
+        for (const file of commandFiles) {
+            const filePath = path.join(commandsPath, file);
+            const importedModule = await import(filePath);
+            const command = importedModule.default as Command;
+    
+            if (command?.data && typeof command.execute === "function") {
+                commands.push(command.data.toJSON());
+            } else {
+                console.warn(`⚠️ Commande invalide ignorée : ${file}`);
+            }
+        }
+    } else {
+        for (const mod of Object.values(BundledCommands)) {
+            const command = mod as Command;
 
-        if (command?.data && typeof command.execute === "function") {
-            commands.push(command.data.toJSON());
-        } else {
-            console.warn(`⚠️ Commande invalide ignorée : ${file}`);
+            if (command?.data && typeof command.execute === "function") {
+                commands.push(command.data.toJSON());
+            }
         }
     }
 
