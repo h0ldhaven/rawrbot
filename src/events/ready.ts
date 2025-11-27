@@ -1,0 +1,56 @@
+import { Events, ActivityType, PresenceData } from "discord.js";
+import type { BotClient } from "../structures/BotClient";
+
+interface BotConfig {
+  username?: string;
+  avatarUrl?: string;
+  status?: "online" | "idle" | "dnd" | "invisible";
+  activity?: {
+    name?: string;
+    type?: ActivityType | number;
+    state?: string;
+  };
+}
+
+const botConfig: BotConfig = {
+    status: "dnd",
+    activity: {
+        name: "Version 0.2.0 — En cours de développement ⚙️",
+        type: 4,
+    },
+};
+
+export default {
+    name: Events.ClientReady,
+    once: true,
+    async execute(client: BotClient) {
+        if (!client.user) return;
+        
+        console.log(`✅ Connecté en tant que ${client.user?.tag}`);
+        const status = botConfig.status ?? "online";
+
+        try {
+            // Construire directement le tableau d'activités
+            const activities = botConfig.activity?.name && botConfig.activity?.type
+                ? [{ name: botConfig.activity.name, type: botConfig.activity.type }]
+                : [];
+
+            const presenceData: PresenceData = {
+                status,
+                activities,
+            };
+
+            await client.user.setPresence(presenceData);
+
+            console.log(`💡 Status défini sur ${status}`);
+            if (botConfig.activity) {
+                console.log(
+                `🎮 Activité définie : ${botConfig.activity.type} ${botConfig.activity.name}`
+                );
+            }
+
+        } catch (err) {
+            console.error("Erreur lors de la configuration du bot :", err);
+        }
+    },
+};
