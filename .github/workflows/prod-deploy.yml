@@ -1,0 +1,61 @@
+name: CI deploy in prod
+
+on:
+  release:
+    types: [published]
+
+jobs:
+    build:
+        name: Build bot before deploy
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Checkout main branch
+            uses: actions/checkout@v4
+            with:
+                ref: main
+
+          - name: Set up Node.js
+            uses: actions/setup-node@v4
+            with:
+                node-version: 24
+        
+          - name: Install dependencies
+            run: npm ci
+
+          - name: Build Project
+            run: npm run build
+
+          - name: Upload build artifacts
+            uses: actions/upload-artifact@v4
+            with:
+                name: build-output
+                path: ./build/
+
+    deploy:
+        name: Deploy bot via SFTP
+        needs: build
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Download build artifacts
+            uses: actions/download-artifact@v4
+            with:
+                name: build-output
+                path: ./build/
+            
+          - name: install LFTP
+            run: sudo apt-get update && sudo apt-get install -y lftp
+
+          - name: Deploy via SFTP
+            env: 
+              SFTP_HOST: ${{ secrets.SFTP_HOST }}
+              SFTP_USER: ${{ secrets.SFTP_USER }}
+              SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+              SFTP_PATH: ${{ secrets.SFTP_PATH }}
+            run: |
+              lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://$SFTP_HOST <<EOF
+                set sftp:auto-confirm yes
+                set ftp:passive-mode yes
+                mirror -R ./build $SFTP_PATH --delete --verbose
+              EOF
