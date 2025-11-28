@@ -14,9 +14,9 @@ interface BotConfig {
 }
 
 const botConfig: BotConfig = {
-    status: "dnd",
+    status: "online",
     activity: {
-        name: "Version 0.2.0 — En cours de développement ⚙️",
+        name: "Version 0.3.0 — En cours de développement ⚙️",
         type: 4,
     },
 };
