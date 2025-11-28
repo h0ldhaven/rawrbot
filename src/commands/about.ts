@@ -1,8 +1,8 @@
-import { ChatInputCommandInteraction, TextChannel } from "discord.js";
+import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
 import type { Command } from "../types/Command";
 import { Logger } from "../utils/Logger";
-import { createCommand } from '../utils/CommandFactory';
+import { createCommand } from "../utils/CommandFactory";
 import { createEmbed } from "../utils/EmbedFactory";
 
 const about: Command = createCommand({
@@ -26,7 +26,7 @@ const about: Command = createCommand({
         if (targetChannel && targetChannel.isTextBased()) {
             await targetChannel.send({ embeds: [embed] });
             await interaction.reply({
-                content: `✅ Informations envoyées dans ${targetChannel}`,
+                content: `✅ Commande envoyées dans ${targetChannel}`,
                 ephemeral: false,
             });
             Logger.command(`Commande /about exécutée par ${interaction.user.tag} dans #${targetChannel}.`);

@@ -1,4 +1,5 @@
-import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { PermissionFlagsBits } from "discord.js";
 
 export class PermissionHandler {
   static checkPermissions(

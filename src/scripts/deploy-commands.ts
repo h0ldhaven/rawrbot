@@ -1,9 +1,9 @@
 import "dotenv/config";
 import { REST, Routes } from "discord.js";
-import fs from "fs";
-import path from "path";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import type { Command } from "../types/Command";
+
+import * as Commands  from "../commands";
 
 async function main() {
     // ⚙️ Récupère les infos du .env
@@ -17,20 +17,12 @@ async function main() {
     // 📁 Charge toutes les commandes
     const commands: RESTPostAPIApplicationCommandsJSONBody[] = [];
 
-    const commandsPath = path.join(process.cwd(), "src", "commands");
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
-
-    for (const file of commandFiles) {
-        const filePath = path.join(commandsPath, file);
-        const importedModule = await import(filePath);
-        const command = importedModule.default as Command;
-
-        if (command?.data && typeof command.execute === "function") {
-            commands.push(command.data.toJSON());
-        } else {
-            console.warn(`⚠️ Commande invalide ignorée : ${file}`);
-        }
+    for (const mod of Object.values(Commands)) {
+    const command = mod as Command;
+    if (command?.data && typeof command.execute === "function") {
+      commands.push(command.data.toJSON());
     }
+  }
 
     // 🚀 Déploie les commandes
     try {

@@ -1,5 +1,6 @@
 import type { Command } from "../types/Command";
-import { buildSlashCommand, CommandOption } from "./SlashCommandBuilder";
+import type { CommandOption } from "./SlashCommandBuilder";
+import { buildSlashCommand } from "./SlashCommandBuilder";
 
 export function createCommand(command: Omit<Command, "data"> & { options?: CommandOption[] }): Command {
     return {

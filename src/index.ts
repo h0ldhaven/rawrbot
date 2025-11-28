@@ -1,30 +1,38 @@
+import type { BotEvent } from "./types/Event";
+import type { Command } from "./types/Command";
+import type { ClientEvents } from "discord.js";
+
 import "dotenv/config";
-import { readdirSync } from "fs";
-import path from "path";
 import { BotClient } from "./structures/BotClient";
 import { Logger } from "./utils/Logger";
 
+import * as Commands from "./commands";
+import * as Events from "./events";
+
 const client = new BotClient();
+
+function hasOnce<K extends keyof ClientEvents>(
+  evt: BotEvent<K>
+): evt is BotEvent<K> & { once: true } {
+  return evt.once === true;
+}
 
 async function main() {
   // ====== COMMANDES ======
-  const commandFiles = readdirSync(path.join(__dirname, "commands")).filter(f => f.endsWith(".ts"));
-  for (const file of commandFiles) {
-    const cmd = await import(`./commands/${file}`);
-    if (cmd.default?.data && cmd.default?.execute) {
-      client.commands.set(cmd.default.data.name, cmd.default);
-      Logger.command(`Commande chargée: ${cmd.default.data.name}`);
+  for (const cmd of Object.values(Commands) as Command[]) {
+    if (cmd?.data) {
+      client.commands.set(cmd.data.name, cmd);
+      Logger.command(`Commande chargée: ${cmd.data.name}`);
     }
   }
 
   // ====== EVENTS ======
-  const eventFiles = readdirSync(path.join(__dirname, "events")).filter(f => f.endsWith(".ts"));
-  for (const file of eventFiles) {
-    const event = await import(`./events/${file}`);
-    if (event.default.once) {
-      client.once(event.default.name, (...args) => event.default.execute(...args, client));
+  for (const evt of Object.values(Events) as BotEvent<keyof ClientEvents>[]) {
+    if (!evt || !evt.name || !evt.execute) continue;
+    if (hasOnce(evt)) {
+      client.once(evt.name, (...args) => evt.execute(...args, client));
     } else {
-      client.on(event.default.name, (...args) => event.default.execute(...args, client));
+      client.on(evt.name, (...args) => evt.execute(...args, client));
     }
   }
 

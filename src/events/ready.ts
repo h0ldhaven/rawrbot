@@ -1,4 +1,5 @@
-import { Events, ActivityType, PresenceData } from "discord.js";
+import type { ActivityType, PresenceData } from "discord.js";
+import { Events } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
 
 interface BotConfig {

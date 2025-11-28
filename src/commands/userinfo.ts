@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, GuildMember, User, TextChannel } from "discord.js";
+import type { ChatInputCommandInteraction, GuildMember, User, TextChannel, Activity } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
 import type { Command } from "../types/Command";
 import { createCommand } from "../utils/CommandFactory";
@@ -104,8 +104,8 @@ export async function buildUserEmbed(
         .map(a => {
           const name = a.name ?? "";
           const type = a.type !== undefined ? a.type.toString() : "";
-          const details = (a as any).details ? ` — ${(a as any).details}` : "";
-          const state = (a as any).state ? ` (${(a as any).state})` : "";
+          const details = (a as Activity).details ? ` — ${(a as Activity).details}` : "";
+          const state = (a as Activity).state ? ` (${(a as Activity).state})` : "";
           return `${name}${type}${details}${state}`;
         })
         .join("\n")
