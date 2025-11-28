@@ -29,12 +29,12 @@ const about: Command = createCommand({
                 content: `✅ Commande envoyées dans ${targetChannel}`,
                 ephemeral: false,
             });
-            Logger.command(`Commande /about exécutée par ${interaction.user.tag} dans #${targetChannel}.`);
+            Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${targetChannel.name}.`);
         } else {
             const channel = interaction.channel as TextChannel;
             // Sinon, on envoie dans le salon actuel
             await interaction.reply({ embeds: [embed] });
-            Logger.command(`Commande /about exécutée par ${interaction.user.tag} dans #${channel.name}.`);
+            Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${channel.name}.`);
         }
     },
 });
