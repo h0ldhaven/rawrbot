@@ -9,6 +9,8 @@ import { Logger } from "./utils/Logger";
 import * as Commands from "./commands";
 import * as Events from "./events";
 
+import { deployCommandsGlobal } from "./utils/deploy-commands";
+
 const client = new BotClient();
 
 function hasOnce<K extends keyof ClientEvents>(
@@ -18,6 +20,9 @@ function hasOnce<K extends keyof ClientEvents>(
 }
 
 async function main() {
+  // Déploiement global au démarrage
+  await deployCommandsGlobal();
+
   // ====== COMMANDES ======
   for (const cmd of Object.values(Commands) as Command[]) {
     if (cmd?.data) {
