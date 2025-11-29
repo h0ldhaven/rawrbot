@@ -14,9 +14,9 @@ interface BotConfig {
 }
 
 const botConfig: BotConfig = {
-    status: "dnd",
+    status: "online",
     activity: {
-        name: "Version 0.2.0 — En cours de développement ⚙️",
+        name: "Version 0.3.0 — En cours de développement ⚙️",
         type: 4,
     },
 };
@@ -26,8 +26,6 @@ export default {
     once: true,
     async execute(client: BotClient) {
         if (!client.user) return;
-        
-        console.log(`✅ Connecté en tant que ${client.user?.tag}`);
         const status = botConfig.status ?? "online";
 
         try {
@@ -49,6 +47,11 @@ export default {
                 `🎮 Activité définie : ${botConfig.activity.type} ${botConfig.activity.name}`
                 );
             }
+
+            console.log("change this text 1");
+            console.log("change this text 2");
+            console.log("Server Started");
+            console.log(`✅ Connecté en tant que ${client.user?.tag}`);
 
         } catch (err) {
             console.error("Erreur lors de la configuration du bot :", err);

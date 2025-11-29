@@ -53,7 +53,7 @@ const clearCommand: Command = createCommand({
             // Supprime ce message après 5 secondes (5000 ms)
             setTimeout(() => replyMessage.delete().catch(() => {}), 5000);
 
-            Logger.command(`Commande /clear exécutée par ${interaction.user.tag} dans #${channel.name}, ${amount} messages supprimés.`);
+            Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${channel.name}.`);
         } catch (err) {
             console.error(err);
             await interaction.reply({ content: "❌ Impossible de supprimer les messages.", ephemeral: true });
