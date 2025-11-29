@@ -58,17 +58,17 @@ const userInfo: Command = createCommand({
         if (targetChannel && targetChannel.isTextBased()) {
             await targetChannel.send({ embeds: [embed] });
             await interaction.reply({
-                content: `✅ Informations envoyées dans ${targetChannel}`,
+                content: `✅ Commande envoyée dans ${targetChannel}`,
                 ephemeral: false,
             });
+            Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${targetChannel.name}.`);
         } else {
             // Sinon, on envoie dans le salon actuel
             await interaction.reply({ embeds: [embed] });
         }
 
-        Logger.command(
-            `Commande /userinfo exécutée par ${interaction.user.tag} sur ${user.tag}`
-        );
+        const channel = interaction.channel as TextChannel;
+        Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${channel.name}.`);
     },
 });
 
