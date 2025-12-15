@@ -1,6 +1,7 @@
 import type { ActivityType, PresenceData } from "discord.js";
 import { Events } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
+import { Logger } from "../utils/Logger";
 
 interface BotConfig {
   username?: string;
@@ -47,20 +48,19 @@ export default {
 
             await client.user.setPresence(presenceData);
 
-            console.log(`💡 Status défini sur ${status}`);
+            Logger.info(`💡 Status défini sur "${status}"`);
+
             if (botConfig.activity) {
-                console.log(
-                `🎮 Activité définie : ${botConfig.activity.type} ${botConfig.activity.name}`
-                );
+                Logger.info(`🎮 Activité définie : ${botConfig.activity.type}, ${botConfig.activity.name}`);
             }
 
             console.log("change this text 1");
             console.log("change this text 2");
             console.log("Server Started");
-            console.log(`✅ Connecté en tant que ${client.user?.tag}`);
+            Logger.info(`✅ Connecté en tant que ${client.user?.tag}`);
 
         } catch (err) {
-            console.error("Erreur lors de la configuration du bot :", err);
+            Logger.error(`Erreur lors de la configuration du bot : ${err}`);
         }
     },
 };
