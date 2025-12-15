@@ -1,6 +1,7 @@
 import type { ActivityType, PresenceData } from "discord.js";
 import { Events } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
+import { Logger } from "../utils/Logger";
 
 interface BotConfig {
   username?: string;
@@ -13,10 +14,16 @@ interface BotConfig {
   };
 }
 
+const BOT_VERSION_PREFIX: string = process.env.BOT_VERSION_PREFIX ?? "Version";
+const BOT_VERSION_NUMBER: string = process.env.BOT_VERSION_NUMBER ?? "_._._";
+const BOT_VERSION_MESSAGE: string = process.env.BOT_VERSION_MESSAGE ?? "Hi, I'm a good bot !";
+
+const activityLabel = `${BOT_VERSION_PREFIX} ${BOT_VERSION_NUMBER} — ${BOT_VERSION_MESSAGE}`;
+
 const botConfig: BotConfig = {
     status: "online",
     activity: {
-        name: "Version 0.3.0 — En cours de développement ⚙️",
+        name: activityLabel,
         type: 4,
     },
 };
@@ -41,20 +48,19 @@ export default {
 
             await client.user.setPresence(presenceData);
 
-            console.log(`💡 Status défini sur ${status}`);
+            Logger.info(`💡 Status défini sur "${status}"`);
+
             if (botConfig.activity) {
-                console.log(
-                `🎮 Activité définie : ${botConfig.activity.type} ${botConfig.activity.name}`
-                );
+                Logger.info(`🎮 Activité définie : ${botConfig.activity.type}, ${botConfig.activity.name}`);
             }
 
             console.log("change this text 1");
             console.log("change this text 2");
             console.log("Server Started");
-            console.log(`✅ Connecté en tant que ${client.user?.tag}`);
+            Logger.info(`✅ Connecté en tant que ${client.user?.tag}`);
 
         } catch (err) {
-            console.error("Erreur lors de la configuration du bot :", err);
+            Logger.error(`Erreur lors de la configuration du bot : ${err}`);
         }
     },
 };
