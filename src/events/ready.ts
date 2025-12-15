@@ -13,10 +13,16 @@ interface BotConfig {
   };
 }
 
+const BOT_VERSION_PREFIX: string = process.env.BOT_VERSION_PREFIX ?? "Version";
+const BOT_VERSION_NUMBER: string = process.env.BOT_VERSION_NUMBER ?? "_._._";
+const BOT_VERSION_MESSAGE: string = process.env.BOT_VERSION_MESSAGE ?? "Hi, I'm a good bot !";
+
+const activityLabel = `${BOT_VERSION_PREFIX} ${BOT_VERSION_NUMBER} — ${BOT_VERSION_MESSAGE}`;
+
 const botConfig: BotConfig = {
     status: "online",
     activity: {
-        name: "Version 0.3.0 — En cours de développement ⚙️",
+        name: activityLabel,
         type: 4,
     },
 };
