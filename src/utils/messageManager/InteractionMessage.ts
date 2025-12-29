@@ -69,14 +69,11 @@ function isSendableChannel(target: unknown): target is TextBasedChannel & { send
  * @param content Texte du message
  * @param flags Tableau des flags à appliquer (ex: ["Ephemeral", "Crossposted"])
  */
-export async function sendInteractionMessage(params: SendMessageParams) {
+export async function sendInteractionMessage(params: SendMessageParams): Promise<Message> {
     const { target, content, flags, embeds, components } = params;
 
     // Convertir les noms de flags en BitField
-    const resolvedFlags = flags?.reduce(
-        (acc, flag) => acc | Number(MessageFlags[flag]),
-        0
-    );
+    const resolvedFlags = flags?.reduce((acc, flag) => acc | Number(MessageFlags[flag]), 0);
 
     if (isInteraction(target)) {
         if (target.replied || target.deferred) {
@@ -91,8 +88,9 @@ export async function sendInteractionMessage(params: SendMessageParams) {
             };
             await target.reply(replyOptions);
         }
+        return await target.fetchReply();
     } else if (isSendableChannel(target)) {
-        await target.send({
+        return await target.send({
             content,
             embeds,
             components
