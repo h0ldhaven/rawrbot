@@ -1,7 +1,7 @@
 import { Events } from "discord.js";
 import type { Interaction } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
-import { PermissionHandler } from "../utils/PermissionHandler";
+import { PermissionHandler } from "../utils/permissionManager/PermissionHandler";
 
 export default {
     name: Events.InteractionCreate,
