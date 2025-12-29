@@ -4,6 +4,7 @@ import type { Command } from "../types/Command";
 import { createCommand } from "../utils/commandManager/CommandFactory";
 import { Logger } from "../utils/loggerManager/Logger";
 import { createEmbed } from "../utils/embedManager/EmbedFactory";
+import { resolveUser } from "../utils/userManager/userResolver";
 
 
 const userInfo: Command = createCommand({
@@ -29,16 +30,18 @@ const userInfo: Command = createCommand({
         const input = interaction.options.getString("target", true);
         const targetChannel = interaction.options.getChannel("salon") as TextChannel | null;
 
-        const userId = input.match(/^<@!?(\d+)>$/)?.[1] ?? input;
-        const user = (await client.users.fetch(userId).catch(() => null)) || null;
+        const result = await resolveUser(client, input);
 
-        if (!user) {
-            await interaction.reply({
-                content: `❌ Aucun utilisateur trouvé pour \`${input}\``,
-                ephemeral: true,
-            });
+        if (!result.ok) {
+            const message = result.reason === "INVALID_INPUT"
+                ? "❌ Format invalide. Utilise une mention ou un ID."
+                : `❌ Aucun utilisateur trouvé pour \`${input}\``;
+
+            await interaction.reply({content: message, ephemeral: false});
             return;
         }
+
+        const user = result.user;
 
         const member = (await interaction.guild?.members
             .fetch(user.id)
@@ -52,7 +55,7 @@ const userInfo: Command = createCommand({
                 .catch(() => false);
         }
 
-        const embed = await buildUserEmbed(client, user, member, isBanned);
+        const embed = await buildUserEmbed(user, member, isBanned);
 
         // Si un salon est précisé, on y envoie le message
         if (targetChannel && targetChannel.isTextBased()) {
@@ -79,20 +82,17 @@ export default userInfo;
 // ===================== //
 
 export async function buildUserEmbed(
-  client: BotClient,
   user: User,
   member: GuildMember | null,
   isBanned = false
 ) {
-  // Rafraîchir le user pour avoir les flags / banner à jour
-  const fetchedUser = await client.users.fetch(user.id).catch(() => user);
 
   // Flags / badges
-  const badges = fetchedUser.flags?.toArray?.() ?? [];
+  const badges = user.flags?.toArray?.() ?? [];
 
   // Banner et accent
-  const bannerUrl = fetchedUser.bannerURL?.({ size: 1024 }) ?? null;
-  const accentColor = fetchedUser.accentColor ?? undefined;
+  const bannerUrl = user.bannerURL?.({ size: 1024 }) ?? null;
+  const accentColor = user.accentColor ?? undefined;
 
   // Presence / activités (uniquement si membre et intents)
   const presence = member?.presence;
@@ -125,13 +125,13 @@ export async function buildUserEmbed(
   const voiceChannel = member?.voice?.channel ? `<#${member.voice.channel.id}>` : "Pas en vocal";
 
   // Timestamps
-  const createdTs = Math.floor(fetchedUser.createdTimestamp / 1000);
+  const createdTs = Math.floor(user.createdTimestamp / 1000);
   const joinedTs = member?.joinedTimestamp ? Math.floor(member.joinedTimestamp / 1000) : null;
 
   const fields = [
-    { name: "🆔 ID", value: fetchedUser.id, inline: true },
-    { name: "🏷️ Tag", value: fetchedUser.tag, inline: true },
-    { name: "🤖 Bot ?", value: fetchedUser.bot ? "Oui" : "Non", inline: false },
+    { name: "🆔 ID", value: user.id, inline: true },
+    { name: "🏷️ Tag", value: user.tag, inline: true },
+    { name: "🤖 Bot ?", value: user.bot ? "Oui" : "Non", inline: false },
     { name: "📅 Compte créé le", value: `<t:${createdTs}:F> (<t:${createdTs}:R>)`, inline: false },
     { name: "🚫 Banni du serveur ?", value: isBanned ? "Oui" : "Non", inline: false },
   ];
@@ -151,8 +151,8 @@ export async function buildUserEmbed(
   fields.push({ name: "🏷️ Badges", value: badges.length ? badges.join(", ") : "Aucun", inline: false });
 
   const embed = createEmbed({
-    title: `👤 Informations sur ${fetchedUser.tag}`,
-    thumbnail: fetchedUser.displayAvatarURL({ size: 1024 }),
+    title: `👤 Informations sur ${user.tag}`,
+    thumbnail: user.displayAvatarURL({ size: 1024 }),
     color: member?.displayHexColor ?? accentColor ?? 0x5865f2,
     fields,
     image: bannerUrl ?? undefined,
