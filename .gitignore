@@ -7,3 +7,5 @@ build/
 # Environnement
 .env
 .env.prod
+
+.commands-hash
