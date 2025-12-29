@@ -1,4 +1,4 @@
-import type { BotClient } from "../structures/BotClient";
+import type { BotClient } from "../../structures/BotClient";
 import type { User } from "discord.js";
 
 const MENTION_REGEX = /^<@!?(\d+)>$/;

@@ -1,7 +1,7 @@
 import type { ActivityType, PresenceData } from "discord.js";
 import { Events } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
-import { Logger } from "../utils/Logger";
+import { Logger } from "../utils/loggerManager/Logger";
 
 interface BotConfig {
   username?: string;

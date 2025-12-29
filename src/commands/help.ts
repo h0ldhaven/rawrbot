@@ -2,9 +2,9 @@ import type { ChatInputCommandInteraction, User, TextChannel  } from "discord.js
 import type { BotClient } from "../structures/BotClient";
 import type { Command } from "../types/Command";
 import { PermissionFlagsBits } from "discord.js";
-import { Logger } from "../utils/Logger";
-import { createCommand } from "../utils/CommandFactory";
-import { createEmbed } from "../utils/EmbedFactory";
+import { Logger } from "../utils/loggerManager/Logger";
+import { createCommand } from "../utils/commandManager/CommandFactory";
+import { createEmbed } from "../utils/embedManager/EmbedFactory";
 
 const HelpCommand: Command = createCommand({
     name: "help",

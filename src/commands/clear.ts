@@ -1,9 +1,9 @@
 import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
 import type { Command } from "../types/Command";
-import { createCommand } from "../utils/CommandFactory";
-import { Logger } from "../utils/Logger";
-import { createEmbed } from "../utils/EmbedFactory";
+import { createCommand } from "../utils/commandManager/CommandFactory";
+import { Logger } from "../utils/loggerManager/Logger";
+import { createEmbed } from "../utils/embedManager/EmbedFactory";
 
 const clearCommand: Command = createCommand({
     name: "clear",

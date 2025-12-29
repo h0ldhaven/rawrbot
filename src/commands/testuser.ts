@@ -1,10 +1,10 @@
 import type { ChatInputCommandInteraction, GuildMember, User, TextChannel } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
 import type { Command } from "../types/Command";
-import { createCommand } from "../utils/CommandFactory";
-import { Logger } from "../utils/Logger";
-import { createEmbed } from "../utils/EmbedFactory";
-import { resolveUser } from "../utils/userResolver";
+import { createCommand } from "../utils/commandManager/CommandFactory";
+import { Logger } from "../utils/loggerManager/Logger";
+import { createEmbed } from "../utils/embedManager/EmbedFactory";
+import { resolveUser } from "../utils/userManager/userResolver";
 
 
 const testUser: Command = createCommand({
