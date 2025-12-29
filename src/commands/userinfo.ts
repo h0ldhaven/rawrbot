@@ -5,6 +5,7 @@ import { createCommand } from "../utils/commandManager/CommandFactory";
 import { Logger } from "../utils/loggerManager/Logger";
 import { createEmbed } from "../utils/embedManager/EmbedFactory";
 import { resolveUser } from "../utils/userManager/userResolver";
+import { sendInteractionMessage } from "../utils/messageManager/InteractionMessage";
 
 
 const userInfo: Command = createCommand({
@@ -37,7 +38,12 @@ const userInfo: Command = createCommand({
                 ? "❌ Format invalide. Utilise une mention ou un ID."
                 : `❌ Aucun utilisateur trouvé pour \`${input}\``;
 
-            await interaction.reply({content: message, ephemeral: false});
+            await sendInteractionMessage({
+              target: interaction,
+              content: message,
+              flags: ["Ephemeral"]
+            });
+            
             return;
         }
 
@@ -59,19 +65,30 @@ const userInfo: Command = createCommand({
 
         // Si un salon est précisé, on y envoie le message
         if (targetChannel && targetChannel.isTextBased()) {
-            await targetChannel.send({ embeds: [embed] });
-            await interaction.reply({
-                content: `✅ Commande envoyée dans ${targetChannel}`,
-                ephemeral: false,
+            // send the message / embed to the targeted channel
+            await sendInteractionMessage({
+              target: targetChannel,
+              embeds: [embed]
             });
+
+            // reply to the user who sent the command
+            await sendInteractionMessage({
+              target: interaction,
+              content: `✅ Commande envoyée dans ${targetChannel}`,
+              flags: ["Ephemeral"]
+            });
+
             Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${targetChannel.name}.`);
         } else {
-            // Sinon, on envoie dans le salon actuel
-            await interaction.reply({ embeds: [embed] });
-        }
+            // send the embed into the actual channel
+            await sendInteractionMessage({
+              target: interaction,
+              embeds: [embed]
+            });
 
-        const channel = interaction.channel as TextChannel;
-        Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${channel.name}.`);
+            const channel = interaction.channel as TextChannel;
+            Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${channel.name}.`);
+        }
     },
 });
 

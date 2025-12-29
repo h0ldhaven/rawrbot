@@ -4,6 +4,7 @@ import type { Command } from "../types/Command";
 import { Logger } from "../utils/loggerManager/Logger";
 import { createCommand } from "../utils/commandManager/CommandFactory";
 import { createEmbed } from "../utils/embedManager/EmbedFactory";
+import { sendInteractionMessage } from "../utils/messageManager/InteractionMessage";
 
 const PingCommand: Command = createCommand({
     name: "ping",
@@ -24,17 +25,26 @@ const PingCommand: Command = createCommand({
         const embed = await buildEmbed(client);
 
         if (targetChannel && targetChannel.isTextBased()) {
-            await targetChannel.send({ embeds: [embed] });
-            
-            await interaction.reply({
+            // send the message / embed to the targeted channel
+            await sendInteractionMessage({
+                target: targetChannel,
+                embeds: [embed]
+            });
+
+            // reply to the user who sent the command
+            await sendInteractionMessage({
+                target: interaction,
                 content: `✅ Commande envoyées dans ${targetChannel}`,
-                ephemeral: false,
+                flags: ["Ephemeral"]
             });
 
             Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${targetChannel.name}.`);
         } else {
-            // Sinon, on envoie dans le salon actuel
-            await interaction.reply({ embeds: [embed] });
+            // send the embed into the actual channel
+            await sendInteractionMessage({
+                target: interaction,
+                embeds: [embed]
+            });
             
             const channel = interaction.channel as TextChannel;
             Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${channel.name}.`);
