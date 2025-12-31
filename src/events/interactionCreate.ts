@@ -1,7 +1,9 @@
 import { Events } from "discord.js";
 import type { Interaction } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
-import { PermissionHandler } from "../utils/PermissionHandler";
+import { PermissionHandler } from "../utils/permissionManager/PermissionHandler";
+import { sendInteractionMessage } from "../utils/messageManager/InteractionMessage";
+import { Logger } from "../utils/loggerManager/Logger";
 
 export default {
     name: Events.InteractionCreate,
@@ -17,12 +19,12 @@ export default {
         try {
             await command.execute(client, interaction);
         } catch(err) {
-            console.error(err);
-            if (interaction.replied || interaction.deferred) {
-                await interaction.editReply("❌ Une erreur est survenue.");
-            } else {
-                await interaction.reply({ content: "❌ Une erreur est survenue.", ephemeral: true });
-            }
+            Logger.error(`Erreur: ${err}`);
+            await sendInteractionMessage({
+                target: interaction,
+                content: "❌ Une erreur est survenue.",
+                flags: ["Ephemeral"]
+            });
         }
     },
 };

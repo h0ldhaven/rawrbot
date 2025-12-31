@@ -1,9 +1,10 @@
 import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
 import type { BotClient } from "../structures/BotClient";
 import type { Command } from "../types/Command";
-import { createCommand } from "../utils/CommandFactory";
-import { Logger } from "../utils/Logger";
-import { createEmbed } from "../utils/EmbedFactory";
+import { createCommand } from "../utils/commandManager/CommandFactory";
+import { Logger } from "../utils/loggerManager/Logger";
+import { createEmbed } from "../utils/embedManager/EmbedFactory";
+import { sendInteractionMessage } from "../utils/messageManager/InteractionMessage";
 
 const clearCommand: Command = createCommand({
     name: "clear",
@@ -23,23 +24,23 @@ const clearCommand: Command = createCommand({
         const amount = interaction.options.getInteger("nombre", true);
 
         if (!interaction.channel || !interaction.channel.isTextBased()) {
-            await interaction.reply({ content: "❌ Impossible de supprimer des messages ici.", ephemeral: true });
+            await sendInteractionMessage({
+                target: interaction,
+                content: "❌ Impossible de supprimer des messages ici.",
+                flags: ["Ephemeral"]
+            });
             return;
         }
 
         const channel = interaction.channel as TextChannel;
 
-        if (!channel.permissionsFor(client.user!)?.has("ManageMessages")) {
-            await interaction.reply({ content: "❌ Je n'ai pas la permission de gérer les messages.", ephemeral: true });
-            return;
-        }
-
         try {
             await channel.bulkDelete(amount, true); // true pour ignorer les messages >14 jours
             
-            //const reply = await interaction.reply({ content: `✅ ${amount} messages supprimés.`, ephemeral: false });
+            // retreive bot info for embed
             const bot = client.user;
 
+            // Embed to show how message have been deleted
             const embed = await createEmbed({
                 title: `${bot?.username}`,
                 description: `✅ ${amount} messages supprimés.`,
@@ -48,15 +49,23 @@ const clearCommand: Command = createCommand({
                 timestamp: true,
             });
 
-            const replyMessage = await interaction.reply({ embeds: [embed], ephemeral: false, fetchReply: true });
-            
-            // Supprime ce message après 5 secondes (5000 ms)
-            setTimeout(() => replyMessage.delete().catch(() => {}), 5000);
+            // send the embed
+            const deleteMessage = await sendInteractionMessage({
+                target: interaction,
+                embeds: [embed]
+            });
+
+            // remove the message after 5 seconds
+            setTimeout(() => deleteMessage?.delete().catch(console.error), 5000);
 
             Logger.command(`(${interaction.guild}) - Commande ${interaction.commandName} exécutée par ${interaction.user.tag} dans #${channel.name}.`);
         } catch (err) {
-            console.error(err);
-            await interaction.reply({ content: "❌ Impossible de supprimer les messages.", ephemeral: true });
+            Logger.error(`Error: ${err}`);
+            await sendInteractionMessage({
+                target: interaction,
+                content: "❌ Impossible de supprimer les messages.",
+                flags: ["Ephemeral"]
+            });
         }
     },
 });
