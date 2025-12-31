@@ -39,8 +39,8 @@
 ### 1️⃣ Cloner et installer le projet
 Pour démarrer le projet en local, clonez le repo puis installez les dépendances :
 ```sh
-$ git clone https://github.com/h0ldhaven/holdhaven.git
-cd holdhaven
+$ git clone https://github.com/h0ldhaven/rawrbot.git
+cd rawrbot
 npm install
 ```
 
